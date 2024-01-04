@@ -20,7 +20,7 @@ namespace project
             InitializeComponent();
         }
 
-        private string connString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Users\\Coppe\\Desktop\\visulProjectFinal\\project\\db\\proje.mdb";
+        private string connString = "PROVIDER_STRING";
 
         private void registerButtonRegister_Click(object sender, EventArgs e)
         {

@@ -28,41 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.labelCategories = new System.Windows.Forms.Label();
-            this.buttonCategoriesShow = new System.Windows.Forms.Button();
-            this.categoriesComboBox = new System.Windows.Forms.ComboBox();
+            this.labelStatusCategory = new System.Windows.Forms.Label();
             this.categoryPictureBox = new System.Windows.Forms.PictureBox();
             this.pieChart1 = new LiveChartsCore.SkiaSharpView.WinForms.PieChart();
+            this.menuIconPictureBox = new System.Windows.Forms.PictureBox();
+            this.exitPictureBox = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.categoryPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.menuIconPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.exitPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // labelCategories
+            // labelStatusCategory
             // 
-            this.labelCategories.AutoSize = true;
-            this.labelCategories.Location = new System.Drawing.Point(364, 43);
-            this.labelCategories.Name = "labelCategories";
-            this.labelCategories.Size = new System.Drawing.Size(57, 13);
-            this.labelCategories.TabIndex = 5;
-            this.labelCategories.Text = "Categories";
-            // 
-            // buttonCategoriesShow
-            // 
-            this.buttonCategoriesShow.Location = new System.Drawing.Point(367, 337);
-            this.buttonCategoriesShow.Name = "buttonCategoriesShow";
-            this.buttonCategoriesShow.Size = new System.Drawing.Size(75, 23);
-            this.buttonCategoriesShow.TabIndex = 6;
-            this.buttonCategoriesShow.Text = "SHOW";
-            this.buttonCategoriesShow.UseVisualStyleBackColor = true;
-            this.buttonCategoriesShow.Click += new System.EventHandler(this.buttonCategoriesShow_Click);
-            // 
-            // categoriesComboBox
-            // 
-            this.categoriesComboBox.FormattingEnabled = true;
-            this.categoriesComboBox.Location = new System.Drawing.Point(335, 78);
-            this.categoriesComboBox.Name = "categoriesComboBox";
-            this.categoriesComboBox.Size = new System.Drawing.Size(121, 21);
-            this.categoriesComboBox.TabIndex = 7;
-            this.categoriesComboBox.SelectedIndexChanged += new System.EventHandler(this.categoriesComboBox_SelectedIndexChanged);
+            this.labelStatusCategory.AutoSize = true;
+            this.labelStatusCategory.Location = new System.Drawing.Point(255, 49);
+            this.labelStatusCategory.Name = "labelStatusCategory";
+            this.labelStatusCategory.Size = new System.Drawing.Size(37, 13);
+            this.labelStatusCategory.TabIndex = 5;
+            this.labelStatusCategory.Text = "Status";
             // 
             // categoryPictureBox
             // 
@@ -87,31 +70,51 @@
             this.pieChart1.Total = null;
             this.pieChart1.Load += new System.EventHandler(this.pieChart1_Load);
             // 
+            // menuIconPictureBox
+            // 
+            this.menuIconPictureBox.Location = new System.Drawing.Point(12, 12);
+            this.menuIconPictureBox.Name = "menuIconPictureBox";
+            this.menuIconPictureBox.Size = new System.Drawing.Size(96, 38);
+            this.menuIconPictureBox.TabIndex = 10;
+            this.menuIconPictureBox.TabStop = false;
+            this.menuIconPictureBox.Click += new System.EventHandler(this.menuIconPictureBox_Click);
+            // 
+            // exitPictureBox
+            // 
+            this.exitPictureBox.Location = new System.Drawing.Point(748, 23);
+            this.exitPictureBox.Name = "exitPictureBox";
+            this.exitPictureBox.Size = new System.Drawing.Size(40, 39);
+            this.exitPictureBox.TabIndex = 11;
+            this.exitPictureBox.TabStop = false;
+            this.exitPictureBox.Click += new System.EventHandler(this.exitPictureBox_Click);
+            // 
             // mainPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.exitPictureBox);
+            this.Controls.Add(this.menuIconPictureBox);
             this.Controls.Add(this.pieChart1);
             this.Controls.Add(this.categoryPictureBox);
-            this.Controls.Add(this.categoriesComboBox);
-            this.Controls.Add(this.buttonCategoriesShow);
-            this.Controls.Add(this.labelCategories);
+            this.Controls.Add(this.labelStatusCategory);
             this.Name = "mainPage";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.mainPage_Load);
             this.Click += new System.EventHandler(this.Form1_Click);
             ((System.ComponentModel.ISupportInitialize)(this.categoryPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.menuIconPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.exitPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Label labelCategories;
-        private System.Windows.Forms.Button buttonCategoriesShow;
-        private System.Windows.Forms.ComboBox categoriesComboBox;
+        private System.Windows.Forms.Label labelStatusCategory;
         private System.Windows.Forms.PictureBox categoryPictureBox;
         private LiveChartsCore.SkiaSharpView.WinForms.PieChart pieChart1;
+        private System.Windows.Forms.PictureBox menuIconPictureBox;
+        private System.Windows.Forms.PictureBox exitPictureBox;
     }
 }

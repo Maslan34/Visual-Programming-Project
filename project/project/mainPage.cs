@@ -16,33 +16,51 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Collections.ObjectModel;
 using System.Collections;
 using System.Data.SqlClient;
+using System.Windows.Media;
 
 namespace project
 {
     public partial class mainPage : Form
     {
+        private string connString = "PROVIDER_STRING";
 
-        OleDbConnection accessConnection = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Users\\Coppe\\Desktop\\visulProjectSon\\project\\db\\proje.mdb");
+        OleDbConnection accessConnection = new OleDbConnection("PATH_TO_DB");
+        
         private Panel panelSidebar;
-        private Button btnToggleSidebar;
-        private String[] categories = { "drinks", "snacks", "patisserie" };
 
-        public mainPage()
+        private String[] categories = { "drinks", "snacks", "patisserie" };
+        private String username;
+        
+        
+        
+        public mainPage(String username)
         {
+            this.username = username;
             InitializeComponent();
             //string[] categories = { "drinks", "snacks", "patessiere" };
-            categoriesComboBox.Items.AddRange(categories);
-            categoriesComboBox.SelectedIndex = 0;
+         
             initializeSideBar();
+
         }
 
         private void mainPage_Load(object sender, EventArgs e)
         {
 
-         
+
+           
+ 
+            // BACKGROUND COLOR
+
+            this.BackColor = ColorTranslator.FromHtml("#D4DBA9");
+
+            // BACKGROUND COLOR
+
+
+
+            //LOADING CATEGORY IMAGE 
             string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-
+            //üSt Klasöre Çıkma
             string parentDirectory = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(currentDirectory).FullName).FullName).FullName).FullName;
 
             string imagePath = Path.Combine(parentDirectory, "images", "Project_Logo.jpg");
@@ -51,49 +69,98 @@ namespace project
             categoryPictureBox.Image = Image.FromFile(imagePath);
 
             categoryPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            
+            //LOADING CATEGORY IMAGE 
 
-            // Access veritabanı bağlantı dizesi
-            string accessConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Users\\Coppe\\Desktop\\visualTeslim\\visulProjectSon29-12-2023\\project\\db\\proje.mdb";
 
-            // Tabloların listesi
-            string[] tables = { "drinks", "snacks", "patisserie" };
+
+
+            //LOADING MENU IMAGE 
+
+
+            string imagePathMenu = Path.Combine(parentDirectory, "images", "menu_icon.ico");
+
+
+            menuIconPictureBox.Image = Image.FromFile(imagePathMenu);
+
+            menuIconPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+
+            //LOADING MENU IMAGE 
+
+
+
+
+
+            // DISABLING MENU ON LOAD
+            menuIconPictureBox.Visible = false;
+            // DISABLING MENU ON LOAD
+
+
+
+            //LOADING EXIT IMAGE 
+            string imagePathExit = Path.Combine(parentDirectory, "images", "exit_icon.ico");
+
+
+            exitPictureBox.Image = Image.FromFile(imagePathExit);
+
+            exitPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            //LOADING EXIT IMAGE 
+            
+
+
+
+            
      
+            //SQLDE ÇALIŞMAK İÇİN
 
-            List<decimal> totalStockQuantities = new List<decimal>();
+            List <decimal> totalStockQuantities = new List<decimal>();
+            
+            // KATEGORİ ADLARI İLE STOCK MİKTARINI TUTMA
+            Dictionary<string, int> stockWarning = new Dictionary<string, int>();
+
+            
 
 
-            // Bağlantı oluştur
-            using (OleDbConnection accessConnection = new OleDbConnection(accessConnectionString))
+            // Bağlantı oluşturma
+            using (OleDbConnection accessConnection = new OleDbConnection(this.connString))
             {
-                // Bağlantıyı aç
+               
                 accessConnection.Open();
 
-                foreach (string table in tables)
+                foreach (string table in this.categories)
                 {
 
                  
                    
-                    // SQL sorgusu
+                    
                     string query = $@"
                     SELECT 
                         SUM(IIf(stockQuantity > 0, stockQuantity, 0)) AS toplamStockQuantity
                     FROM 
                         {table};";
 
-                    // Komut oluştur
+                    
                     using (OleDbCommand accessCommand = new OleDbCommand(query, accessConnection))
                     {
-                        // Sorguyu çalıştır ve sonucu al
+                     
                         object result = accessCommand.ExecuteScalar();
+
                         if (result != DBNull.Value)
                         {
                             totalStockQuantities.Add(Convert.ToDecimal(result));
                         }
 
 
+                       
+                        
+                        if (Convert.ToInt32(result) <= 10)
+                        {
+                            Console.WriteLine("Warning:"+Convert.ToInt32(result));
+                            stockWarning.Add(table, Convert.ToInt32(result));
+                           
+                        }
 
-                        // Sonucu ekrana bas
-                        Console.WriteLine($"Toplam Stock Quantity for {table}: {result}");
+                        Console.WriteLine($"All Stock Quantity for {table}: {result}");
 
                     }
                     
@@ -103,6 +170,7 @@ namespace project
             
 
             decimal[] decimalDizisi = totalStockQuantities.ToArray();
+
             int[] sayiDizisi = new int[decimalDizisi.Length];
 
             for (int i = 0; i < decimalDizisi.Length; i++)
@@ -142,56 +210,47 @@ namespace project
             };
 
 
-        }
 
-       
-        private void buttonCategoriesShow_Click(object sender, EventArgs e)
-        {
-            string selectedCategory = categoriesComboBox.SelectedItem.ToString();
 
-            if (selectedCategory == "drinks")
+
+            //LOADING STATUS LABEL
+
+           
+            
+
+            
+            labelStatusCategory.AutoSize = false;
+            labelStatusCategory.Font = new Font(labelStatusCategory.Font.FontFamily, 15, labelStatusCategory.Font.Style);
+            labelStatusCategory.Height = 50;
+            labelStatusCategory.Width = 350;
+            labelStatusCategory.BackColor = ColorTranslator.FromHtml("#D4DBA9");
+            labelStatusCategory.ForeColor = System.Drawing.Color.Red;
+
+            string warningMessage = "";
+
+            if (stockWarning.Count == 0)
             {
-                manageCategory manageCategory = new manageCategory("drinks");
-                this.Hide();
-                manageCategory.Show();
-            }
-            else if (selectedCategory == "snacks")
-            {
-                manageCategory manageCategory = new manageCategory("snacks");
-              
-                this.Hide();
-                manageCategory.Show();
+                labelStatusCategory.Text = "There is no problem with stock on any product";
             }
             else
             {
-                manageCategory manageCategory = new manageCategory("pati");
-             
-                this.Hide();
-                manageCategory.Show();
+                foreach (var keyValuePair in stockWarning)
+                {
+                    warningMessage = warningMessage + keyValuePair.Key + " ";
+
+                }
+
+                labelStatusCategory.Text = "Warning: " + warningMessage + "is at critical level!";
+              
+
             }
+             
         }
 
-        private void categoriesComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            String categoryName=categoriesComboBox.SelectedItem.ToString();
+        //LOADING STATUS LABEL
 
 
-            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            // Dört klasöre çık
-            string parentDirectory = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(currentDirectory).FullName).FullName).FullName).FullName;
-
-          
-            string imagePath = Path.Combine(parentDirectory, "images", categoryName+".jpeg");
-
-            
-
-            
-            categoryPictureBox.Image = Image.FromFile(imagePath);
-
-            this.Controls.Add(categoryPictureBox);
-
-        }
 
         private void categoryPictureBox_Click(object sender, EventArgs e)
         {
@@ -203,74 +262,83 @@ namespace project
 
         }
 
-       
 
-        private void btnToggleSidebar_Click(object sender, EventArgs e)
-        {
-            panelSidebar.Visible = !panelSidebar.Visible; // Toggle the visibility
-        }
         private void initializeSideBar()
         {
             panelSidebar = new Panel();
             panelSidebar.Size = new Size(200, this.ClientSize.Height);
-            panelSidebar.BackColor = Color.Aqua;
+            panelSidebar.BackColor = ColorTranslator.FromHtml("#0B2C37");
             panelSidebar.Dock = DockStyle.Left;
 
+            PictureBox userPictureBox = new PictureBox();
 
+            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            string parentDirectory = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(currentDirectory).FullName).FullName).FullName).FullName;
+
+            string imagePath = Path.Combine(parentDirectory, "images", "user_icon.ico");
+            userPictureBox.Image = Image.FromFile(imagePath);
+            userPictureBox.Dock = DockStyle.Top;
+            userPictureBox.Size = new Size(50, 50);
+            userPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            
+
+            Label userNameLabel = new Label();
+            userNameLabel.Dock = DockStyle.Top;
+     
+            Font bolded = new Font(userNameLabel.Font, FontStyle.Bold);
+
+            userNameLabel.Font = bolded;
+            userNameLabel.AutoSize = false;
+            userNameLabel.Font = new Font(labelStatusCategory.Font.FontFamily, 15, labelStatusCategory.Font.Style);
+            userNameLabel.Height = 50;
+            userNameLabel.Width = 350;
+           
+            //this.Controls.Add(userNameLabel);
+
+
+            userNameLabel.Text = "Welcome Back!\n"+this.username;
+            userNameLabel.ForeColor = System.Drawing.Color.White;
+            userNameLabel.Dock = DockStyle.Top;
+
+            panelSidebar.Controls.Add(userNameLabel);
+            panelSidebar.Controls.Add(userPictureBox);
 
             foreach (var category in this.categories)
             {
                 Button btnSidebarItem = new Button();
-                //btnSidebarItem.MouseHover += (sender, e) => CategoryButton_Hover(sender, e, category);
                 btnSidebarItem.Text = category;
-                btnSidebarItem.Dock = DockStyle.Top;
+                btnSidebarItem.Dock = DockStyle.Bottom;
+                btnSidebarItem.BackColor = ColorTranslator.FromHtml("#D4DBA9");
+
                 btnSidebarItem.MouseEnter += Button_MouseEnter;
                 btnSidebarItem.MouseLeave += Button_MouseLeave;
+
                 btnSidebarItem.Click += (sender, e) => CategoryButton_Click(sender, e, category);
                 panelSidebar.Controls.Add(btnSidebarItem);
             }
 
-
-
-
-
-            this.Controls.Add(panelSidebar); Button btnToggleSidebar = new Button();
-
-            btnToggleSidebar = new Button();
-            btnToggleSidebar.Text = "Toggle Sidebar";
-            btnToggleSidebar.Location = new Point(0, 10); // Positioned on the left
-            btnToggleSidebar.Click += new EventHandler(btnToggleSidebar_Click);
-            this.Controls.Add(btnToggleSidebar);
-
-
-            btnToggleSidebar = new Button();
-            btnToggleSidebar.Text = "Toggle Sidebar";
-            btnToggleSidebar.Location = new Point(210, 10);
-            btnToggleSidebar.Click += new EventHandler(btnShowSidebar_Click);
-            btnToggleSidebar.Visible = false; // Start with the toggle button hidden
-            this.Controls.Add(btnToggleSidebar);
+            this.Controls.Add(panelSidebar);
 
         }
-        private void btnShowSidebar_Click(object sender, EventArgs e)
-        {
-            panelSidebar.Visible = !panelSidebar.Visible;
-            btnToggleSidebar.Visible = panelSidebar.Visible; // Show/hide toggle button with sidebar
-        }
-
       
 
         private void Form1_Click(object sender, EventArgs e)
         {
             panelSidebar.Visible = false;
+            menuIconPictureBox.Visible = true;
         }
 
-        
-
+       
         private void CategoryButton_Click(object sender, EventArgs e, string category)
         {
 
-            manageCategory manageCategory= new manageCategory(category);
-            Console.WriteLine(category);
+            manageCategory manageCategory= new manageCategory(category,this.username);
+
+            //Console.WriteLine(category);
+
+
+            // Bu kısma gerek olmayabilir tek show yeterli olabilir.
             if (category == "drinks")
             { 
                 this.Hide();
@@ -291,14 +359,6 @@ namespace project
                 manageCategory.Show();
             }
                
-           
-        }
-        private void CategoryButton_Hover(object sender, EventArgs e, string category)
-        {
-
-            
-           
-
 
         }
 
@@ -306,8 +366,6 @@ namespace project
         {
             
             Button button = (Button)sender;
-
-            String categoryName = categoriesComboBox.SelectedItem.ToString();
 
 
             string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -323,11 +381,11 @@ namespace project
                
             
             string imagePath = Path.Combine(parentDirectory, "images", button.Text + ".jpeg");
+
             categoryPictureBox.Image = Image.FromFile(imagePath);
 
-            this.Controls.Add(categoryPictureBox);
+            //this.Controls.Add(categoryPictureBox);
 
-            this.Controls.Add(categoryPictureBox);
             button.BackColor = System.Drawing.Color.DarkGray;
             
 
@@ -337,7 +395,7 @@ namespace project
         {
             // Mouse ayrıldığında butonun arka plan rengini eski haline getirin
             Button button = (Button)sender;
-            button.BackColor = System.Drawing.Color.LightGray;
+            button.BackColor =  ColorTranslator.FromHtml("#D4DBA9");
 
             string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -350,7 +408,24 @@ namespace project
             categoryPictureBox.Image = Image.FromFile(imagePath);
         }
 
+        private void menuIconPictureBox_Click(object sender, EventArgs e)
+        {
+            panelSidebar.Visible = true;
+            menuIconPictureBox.Visible = false;
+        }
 
+        private void exitPictureBox_Click(object sender, EventArgs e)
+        {
+            
+            DialogResult result = MessageBox.Show("Are you sure to exit?", "Exit Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
+            
+            if (result == DialogResult.Yes)
+            {
+                loginPageForm loginPageForm = new loginPageForm();
+                this.Hide();
+                loginPageForm.Show();
+            }
+        }
     }
 }
